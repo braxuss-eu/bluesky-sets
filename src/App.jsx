@@ -117,7 +117,7 @@ function App() {
         `- Followed by${
           criteria.follower.atLeastHowMany
             ? ` at least ${criteria.follower.atLeastHowMany} of `
-            : "all of"
+            : " all of"
         } these accounts: ` + criteria.follower.who.join(", "),
       ]);
     }

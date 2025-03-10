@@ -68,7 +68,7 @@ async function getWhoMeetsCriteria(criteria, progressCallbackRatio = () => { }) 
     if (doesntFollow?.who?.length > 0) {
         accCountSnapshot = accCount;
         // Phase 3: Get accounts following doesntFollow.who
-        const phase3Accounts = follow ? await getFollowingSome(doesntFollow.who, 1,
+        const phase3Accounts = doesntFollow ? await getFollowingSome(doesntFollow.who, 1,
             (count) => {
                 accCount = accCountSnapshot + count;
                 return progressCallbackRatio(accCount, totalItemCount)
@@ -82,7 +82,7 @@ async function getWhoMeetsCriteria(criteria, progressCallbackRatio = () => { }) 
     if (notFollower?.who?.length > 0) {
         accCountSnapshot = accCount;
         // Phase 4: Get accounts followed by notFollower.who
-        const phase4Accounts = follower ? await getFollowerSome(notFollower.who, 1,
+        const phase4Accounts = notFollower ? await getFollowerSome(notFollower.who, 1,
             (count) => {
                 accCount = accCountSnapshot + count;
                 return progressCallbackRatio(accCount, totalItemCount)
