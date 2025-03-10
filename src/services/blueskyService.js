@@ -101,14 +101,14 @@ async function getWhoMeetsCriteria(criteria, progressCallbackRatio = () => { }) 
 async function getXSome(atIdentifiers, profileKey, call, resKey, _atLeast = null, _progressCallbackRatio = null) {
     var atLeast = _atLeast || atIdentifiers.length;
     const map = new Map();
-    const profiles = await getProfiles(atIdentifiers);
+    const profiles = [...await getProfiles(atIdentifiers)];
     profiles.sort((a, b) => a[profileKey] - b[profileKey]); // Sort less to more
     const totalItemCount = profiles.reduce((sum, item) => sum + item[profileKey], 0);
     var accCount = 0;
     const progressCallbackUnits = _progressCallbackRatio ? (count) => _progressCallbackRatio(count + accCount, totalItemCount) : () => { };
     for (var i = 0; i < profiles.length; i++) {
         if (i < profiles.length - 1) {
-            const max = map.values().reduce((max, item) => Math.max(max, item.count), 0);
+            const max = [...map.values()].reduce((max, item) => Math.max(max, item.count), 0);
             if (profiles.length - i + max < atLeast) {
                 // No more chances to reach atLeast
                 accCount = 0;
