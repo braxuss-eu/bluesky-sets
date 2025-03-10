@@ -45,7 +45,7 @@ function App() {
   }
 
   useEffect(() => {
-    loadCriteriaFromUrl();
+    // loadCriteriaFromUrl();
   }, []);
 
   const updateProgress = (a, b) => {
