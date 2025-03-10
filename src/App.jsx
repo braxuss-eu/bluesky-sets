@@ -29,14 +29,20 @@ function App() {
     const criteriaParam = urlParams.get("criteria");
     if (criteriaParam) {
       try {
-        const parsedCriteria = JSON.parse(decodeURIComponent(atob(criteriaParam)));
+        const parsedCriteria = JSON.parse(atob(decodeURIComponent(criteriaParam)));
         setFollowing(
-          parsedCriteria.follow?.who.join(" ") +
-            (parsedCriteria.doesntFollow ? " " + parsedCriteria.doesntFollow.who.map((x) => `-${x}`).join(" ") : "")
+          (parsedCriteria.follow?.who || [])
+            .concat(
+              (parsedCriteria.doesntFollow?.who || [])?.map((x) => `-${x}`)
+            )
+            .join(" ")
         );
         setFollowed(
-          parsedCriteria.follower?.who.join(" ") +
-            (parsedCriteria.notFollower ? " " + parsedCriteria.notFollower.who.map((x) => `-${x}`).join(" ") : "")
+          (parsedCriteria.follower?.who || [])
+            .concat(
+              (parsedCriteria.notFollower?.who || [])?.map((x) => `-${x}`)
+            )
+            .join(" ")
         );
       } catch (error) {
         console.error("Failed to parse criteria from URL", error);
@@ -45,7 +51,7 @@ function App() {
   }
 
   useEffect(() => {
-    // loadCriteriaFromUrl();
+    loadCriteriaFromUrl();
   }, []);
 
   const updateProgress = (a, b) => {
