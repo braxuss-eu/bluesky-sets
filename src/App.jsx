@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import blueskyService from "./services/blueskyService";
 import DelayedImage from "./components/DelayedImage";
@@ -17,6 +17,36 @@ function App() {
   const [progress, setProgress] = useState(progressRef.current);
 
   const [criteria, setCriteria] = useState(null);
+
+  function setCriteriaUrl(criteria) {
+    const url = new URL(window.location);
+    url.searchParams.set("criteria", encodeURIComponent(btoa(JSON.stringify(criteria))));
+    window.history.pushState({}, "", url);
+  }
+
+  function loadCriteriaFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const criteriaParam = urlParams.get("criteria");
+    if (criteriaParam) {
+      try {
+        const parsedCriteria = JSON.parse(decodeURIComponent(atob(criteriaParam)));
+        setFollowing(
+          parsedCriteria.follow?.who.join(" ") +
+            (parsedCriteria.doesntFollow ? " " + parsedCriteria.doesntFollow.who.map((x) => `-${x}`).join(" ") : "")
+        );
+        setFollowed(
+          parsedCriteria.follower?.who.join(" ") +
+            (parsedCriteria.notFollower ? " " + parsedCriteria.notFollower.who.map((x) => `-${x}`).join(" ") : "")
+        );
+      } catch (error) {
+        console.error("Failed to parse criteria from URL", error);
+      }
+    }
+  }
+
+  useEffect(() => {
+    loadCriteriaFromUrl();
+  }, []);
 
   const updateProgress = (a, b) => {
     const now = Date.now();
@@ -75,6 +105,7 @@ function App() {
       notFollower: notFolowedHandles.length ? { who: notFolowedHandles } : null,
     };
     setCriteria(criteria);
+    setCriteriaUrl(criteria);
     blueskyService
       .getWhoMeetsCriteria(criteria, updateProgress)
       .then((intersection) => {
@@ -174,7 +205,7 @@ function App() {
           </Hint>
         </label>
         <input
-          type="text"
+          type="search"
           id="folowing"
           style={{ width: "100%" }}
           value={following}
@@ -188,7 +219,7 @@ function App() {
           </Hint>
         </label>
         <input
-          type="text"
+          type="search"
           id="followed"
           style={{ width: "100%" }}
           value={followed}
