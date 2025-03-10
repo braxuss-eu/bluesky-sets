@@ -201,11 +201,10 @@ function App() {
             Search
           </button>
           {loading ? (
-            <>
-              {" "}
-              <progress value={progress.ratio} />{" "}
-              {progress.eta ? progress.eta + " s" : null}{" "}
-            </>
+            <div>
+              <progress value={progress.ratio} />
+              <div className="notranslate"> {progress.eta ? progress.eta + " s" : null}</div>
+            </div>
           ) : null}
         </div>
         {result?.length > 0 ? (
@@ -215,7 +214,7 @@ function App() {
               <label className="resultLabel">Criteria:</label>
               <ol className="criteria">
                 {buildCriteriaDescription(criteria).map((x, i) => {
-                  return <li key={i}>{x}</li>;
+                  return <li key={Date.now() + "_" + i}>{x}</li>;
                 })}
               </ol>
               <br />
@@ -225,10 +224,10 @@ function App() {
                 className="exportButton"
                 onClick={() => doExport()}
               ></button>
-              <ol className="result">
+              <ol className="result notranslate">
                 {result.map((x, i) => {
                   return (
-                    <li key={i} className="user">
+                    <li key={Date.now() + "_" + i} className="user">
                       <a
                         href={"https://bsky.app/profile/" + x.handle}
                         target="_blank"
