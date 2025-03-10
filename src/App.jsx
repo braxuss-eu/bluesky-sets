@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import "./App.css";
 import blueskyService from "./services/blueskyService";
 import DelayedImage from "./components/DelayedImage";
@@ -18,41 +18,41 @@ function App() {
 
   const [criteria, setCriteria] = useState(null);
 
-  function setCriteriaUrl(criteria) {
-    const url = new URL(window.location);
-    url.searchParams.set("criteria", encodeURIComponent(btoa(JSON.stringify(criteria))));
-    window.history.pushState({}, "", url);
-  }
+  // function setCriteriaUrl(criteria) {
+    // const url = new URL(window.location);
+    // url.searchParams.set("criteria", encodeURIComponent(btoa(JSON.stringify(criteria))));
+    // window.history.pushState({}, "", url);
+  // }
 
-  function loadCriteriaFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const criteriaParam = urlParams.get("criteria");
-    if (criteriaParam) {
-      try {
-        const parsedCriteria = JSON.parse(atob(decodeURIComponent(criteriaParam)));
-        setFollowing(
-          (parsedCriteria.follow?.who || [])
-            .concat(
-              (parsedCriteria.doesntFollow?.who || [])?.map((x) => `-${x}`)
-            )
-            .join(" ")
-        );
-        setFollowed(
-          (parsedCriteria.follower?.who || [])
-            .concat(
-              (parsedCriteria.notFollower?.who || [])?.map((x) => `-${x}`)
-            )
-            .join(" ")
-        );
-      } catch (error) {
-        console.error("Failed to parse criteria from URL", error);
-      }
-    }
-  }
+  // function loadCriteriaFromUrl() {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const criteriaParam = urlParams.get("criteria");
+  //   if (criteriaParam) {
+  //     try {
+  //       const parsedCriteria = JSON.parse(atob(decodeURIComponent(criteriaParam)));
+  //       setFollowing(
+  //         (parsedCriteria.follow?.who || [])
+  //           .concat(
+  //             (parsedCriteria.doesntFollow?.who || [])?.map((x) => `-${x}`)
+  //           )
+  //           .join(" ")
+  //       );
+  //       setFollowed(
+  //         (parsedCriteria.follower?.who || [])
+  //           .concat(
+  //             (parsedCriteria.notFollower?.who || [])?.map((x) => `-${x}`)
+  //           )
+  //           .join(" ")
+  //       );
+  //     } catch (error) {
+  //       console.error("Failed to parse criteria from URL", error);
+  //     }
+  //   }
+  // }
 
-  useEffect(() => {
-    loadCriteriaFromUrl();
-  }, []);
+  // useEffect(() => {
+  //   loadCriteriaFromUrl();
+  // }, []);
 
   const updateProgress = (a, b) => {
     const now = Date.now();
@@ -111,7 +111,7 @@ function App() {
       notFollower: notFolowedHandles.length ? { who: notFolowedHandles } : null,
     };
     setCriteria(criteria);
-    setCriteriaUrl(criteria);
+    // setCriteriaUrl(criteria);
     blueskyService
       .getWhoMeetsCriteria(criteria, updateProgress)
       .then((intersection) => {
