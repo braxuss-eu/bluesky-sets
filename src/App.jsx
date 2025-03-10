@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import blueskyService from "./services/blueskyService";
 import DelayedImage from "./components/DelayedImage";
@@ -18,41 +18,50 @@ function App() {
 
   const [criteria, setCriteria] = useState(null);
 
-  // function setCriteriaUrl(criteria) {
-    // const url = new URL(window.location);
-    // url.searchParams.set("criteria", encodeURIComponent(btoa(JSON.stringify(criteria))));
-    // window.history.pushState({}, "", url);
-  // }
+  function setCriteriaUrl(criteria) {
+    try {
+      const url = new URL(window.location);
+      url.searchParams.set(
+        "criteria",
+        encodeURIComponent(btoa(JSON.stringify(criteria)))
+      );
+      window.history.pushState({}, "", url);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-  // function loadCriteriaFromUrl() {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   const criteriaParam = urlParams.get("criteria");
-  //   if (criteriaParam) {
-  //     try {
-  //       const parsedCriteria = JSON.parse(atob(decodeURIComponent(criteriaParam)));
-  //       setFollowing(
-  //         (parsedCriteria.follow?.who || [])
-  //           .concat(
-  //             (parsedCriteria.doesntFollow?.who || [])?.map((x) => `-${x}`)
-  //           )
-  //           .join(" ")
-  //       );
-  //       setFollowed(
-  //         (parsedCriteria.follower?.who || [])
-  //           .concat(
-  //             (parsedCriteria.notFollower?.who || [])?.map((x) => `-${x}`)
-  //           )
-  //           .join(" ")
-  //       );
-  //     } catch (error) {
-  //       console.error("Failed to parse criteria from URL", error);
-  //     }
-  //   }
-  // }
+  function loadCriteriaFromUrl() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const criteriaParam = urlParams.get("criteria");
+      if (criteriaParam) {
+        const parsedCriteria = JSON.parse(
+          atob(decodeURIComponent(criteriaParam))
+        );
+        setFollowing(
+          (parsedCriteria.follow?.who || [])
+            .concat(
+              (parsedCriteria.doesntFollow?.who || [])?.map((x) => `-${x}`)
+            )
+            .join(" ")
+        );
+        setFollowed(
+          (parsedCriteria.follower?.who || [])
+            .concat(
+              (parsedCriteria.notFollower?.who || [])?.map((x) => `-${x}`)
+            )
+            .join(" ")
+        );
+      }
+    } catch (error) {
+      console.error("Failed to parse criteria from URL", error);
+    }
+  }
 
-  // useEffect(() => {
-  //   loadCriteriaFromUrl();
-  // }, []);
+  useEffect(() => {
+    loadCriteriaFromUrl();
+  }, []);
 
   const updateProgress = (a, b) => {
     const now = Date.now();
@@ -111,7 +120,7 @@ function App() {
       notFollower: notFolowedHandles.length ? { who: notFolowedHandles } : null,
     };
     setCriteria(criteria);
-    // setCriteriaUrl(criteria);
+    setCriteriaUrl(criteria);
     blueskyService
       .getWhoMeetsCriteria(criteria, updateProgress)
       .then((intersection) => {
@@ -140,13 +149,13 @@ function App() {
           criteria.follow.atLeastHowMany
             ? ` at least ${criteria.follow.atLeastHowMany} of `
             : " all of"
-        } these accounts: ` + criteria.follow.who.join(", "),
+        } these accounts: ` + criteria.follow.who.map(x=>`@${x}`).join(", "),
       ]);
     }
     if (criteria?.doesntFollow) {
       description.push([
         `- Doesn't follow any of these accounts: ` +
-          criteria.doesntFollow.who.join(", "),
+          criteria.doesntFollow.who.map(x=>`@${x}`).join(", "),
       ]);
     }
     if (criteria?.follower) {
@@ -155,13 +164,13 @@ function App() {
           criteria.follower.atLeastHowMany
             ? ` at least ${criteria.follower.atLeastHowMany} of `
             : " all of"
-        } these accounts: ` + criteria.follower.who.join(", "),
+        } these accounts: ` + criteria.follower.who.map(x=>`@${x}`).join(", "),
       ]);
     }
     if (criteria?.notFollower) {
       description.push([
         `- Not followed by any of these accounts: ` +
-          criteria.notFollower.who.join(", "),
+          criteria.notFollower.who.map(x=>`@${x}`).join(", "),
       ]);
     }
     return description;
