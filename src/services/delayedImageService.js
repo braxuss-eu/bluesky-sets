@@ -4,9 +4,12 @@ class DelayedImageService {
         this.loading = false;
     }
 
-    preloadImage(url) {
+    preloadImage(url, /** @type { AbortController } */ abortController) {
         return new Promise((resolve, reject) => {
-            this.queue.push({ url, resolve, reject });
+            this.queue.push({ url, resolve, reject, abortController });
+            abortController.signal.onabort = (ev) => {
+                reject(ev.target.reason);
+            };
             this.processQueue();
         });
     }
@@ -17,9 +20,10 @@ class DelayedImageService {
         }
 
         this.loading = true;
-        const { url, resolve, reject } = this.queue.shift();
+        const { url, resolve, reject, abortController } = this.queue.shift();
 
         try {
+            abortController.signal.throwIfAborted();
             await new Promise((imgResolve, imgReject) => {
                 var tmp = new Image();
                 var tries = 3;
@@ -27,15 +31,15 @@ class DelayedImageService {
                     imgResolve();
                 };
                 tmp.onerror = () => {
-                    console.warn("Error loading image", url);
-                    if (--tries > 0) {
+                    // console.warn("Error loading image", url);
+                    if ((!abortController.signal.aborted) && --tries > 0) {                        
                         tmp.src = "#";
                         setTimeout(() => {
                             tmp.src = url;
                         }, 1000);
                         return;
                     } else {
-                        console.error("Failed to load image", url);
+                        // console.error("Failed to load image", url);
                         imgReject(new Error("Failed to load image"));
                     }
                 };
