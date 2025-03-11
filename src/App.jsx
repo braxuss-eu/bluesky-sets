@@ -211,9 +211,10 @@ function App() {
         Bluesky Sets
       </h1>
       <div className="card">
-        <p>Looking for every account that (at the same time):</p>
+        <div className="criteriaForm">
+        <p>Let's search for every "@someone" account that at the same time meets this:</p>
         <label htmlFor="folowing">
-          Follows these accounts (@ handles separated by spaces).{" "}
+          "@someone" follows these accounts (@ handles separated by spaces).{" "}
           <Hint>
             You can express the opposite (doesn't follow) by prefixing a handle
             with a minus sign "-". Eg:&nbsp;-@someone
@@ -224,20 +225,23 @@ function App() {
           id="folowing"
           style={{ width: "100%" }}
           value={following}
+          placeholder="..."
           onChange={(e) => setFollowing(e.target.value)}
         />
         <label htmlFor="followed">
-          Followed by these accounts (@ handles separated by spaces).{" "}
+          "@someone" is followed by these accounts (@ handles separated by spaces).{" "}
           <Hint>
             You can express the opposite (not followed) by prefixing a handle
             with a minus sign "-". Eg:&nbsp;-@someone
           </Hint>
         </label>
+        </div>
         <input
           type="search"
           id="followed"
           style={{ width: "100%" }}
           value={followed}
+          placeholder="..."
           onChange={(e) => setFollowed(e.target.value)}
         />
         <br />
@@ -257,7 +261,7 @@ function App() {
           <>
             <br />
             <div className="card">
-              <label className="resultLabel">Criteria:</label>
+              <label className="resultLabel">You searched with this criteria:</label>
               <ol className="criteria">
                 {buildCriteriaDescription(criteria).map((x, i) => {
                   return <li key={Date.now() + "_" + i}>{x}</li>;
@@ -265,11 +269,13 @@ function App() {
               </ol>
               <br />
               <br />
-              <label className="resultLabel">Result ({result?.length}):</label>
+              <label className="resultLabel">These are those "@someone" ({result?.length}):</label>
               <button
                 className="exportButton"
+                title="Export spreadsheet"
                 onClick={() => doExport()}
               ></button>
+              <br/>
               <ol className="result notranslate">
                 {result.map((x, i) => {
                   return (

@@ -6,6 +6,10 @@
   text-align: center;
 }
 
+h1 {
+  margin-top: 0;
+}
+
 .logo {
   aspect-ratio: 1 / 1;
   height: 1.5em;
@@ -42,6 +46,18 @@
 
 .card {
   padding: 2em;
+}
+
+.criteriaForm {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.criteriaForm input[type="text"],
+.criteriaForm input[type="search"] {
+  margin-bottom: 1em;
 }
 
 .avatar {
